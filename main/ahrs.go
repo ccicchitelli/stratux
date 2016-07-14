@@ -81,7 +81,7 @@ func CalculateCurrentAttitudeXYZ() {
 		total += attitudeXhistory[i]
 	}
 
-	attitudeX = 1 //total / float64(len(attitudeXhistory))
+	attitudeX = total / float64(len(attitudeXhistory))
 
 	total = 0
 	for i := len(attitudeYhistory) - 1; i >= 0; i-- {
@@ -148,6 +148,18 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 	// Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
 	if !((ax == 0.0) && (ay == 0.0) && (az == 0.0)) {
 
+		// Normalise accelerometer measurement
+		recipNorm = invSqrt(ax*ax + ay*ay + az*az)
+		ax *= recipNorm
+		ay *= recipNorm
+		az *= recipNorm
+
+		// Normalise magnetometer measurement
+		recipNorm = invSqrt(mx*mx + my*my + mz*mz)
+		mx *= recipNorm
+		my *= recipNorm
+		mz *= recipNorm
+
 		// Auxiliary variables to avoid repeated arithmetic
 		_2q0mx = 2.0 * q0 * mx
 		_2q0my = 2.0 * q0 * my
@@ -169,18 +181,6 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 		q2q2 = q2 * q2
 		q2q3 = q2 * q3
 		q3q3 = q3 * q3
-
-		// Normalise accelerometer measurement
-		recipNorm = invSqrt(ax*ax + ay*ay + az*az)
-		ax *= recipNorm
-		ay *= recipNorm
-		az *= recipNorm
-
-		// Normalise magnetometer measurement
-		recipNorm = invSqrt(mx*mx + my*my + mz*mz)
-		mx *= recipNorm
-		my *= recipNorm
-		mz *= recipNorm
 
 		// Reference direction of Earth's magnetic field
 		hx = mx*q0q0 - _2q0my*q3 + _2q0mz*q2 + mx*q1q1 + _2q1*my*q2 + _2q1*mz*q3 - mx*q2q2 - mx*q3q3
@@ -223,146 +223,146 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 }
 
 func AHRSupdate(w_x, w_y, w_z, a_x, a_y, a_z, m_x, m_y, m_z float64) {
-	initCount++
-	if initCount > 10000 { // 10 seconds
-		beta = 0.05
-	}
+	// initCount++
+	// if initCount > 10000 { // 10 seconds
+	// 	beta = 0.05
+	// }
 
-	// local system variables
-	var norm float64                                                                                                                       // vector norm
-	var SEqDot_omega_1, SEqDot_omega_2, SEqDot_omega_3, SEqDot_omega_4 float64                                                             // quaternion rate from gyroscopes elements
-	var f_1, f_2, f_3, f_4, f_5, f_6 float64                                                                                               // objective function elements
-	var J_11or24, J_12or23, J_13or22, J_14or21, J_32, J_33, J_41, J_42, J_43, J_44, J_51, J_52, J_53, J_54, J_61, J_62, J_63, J_64 float64 //objective function Jacobian elements
-	var SEqHatDot_1, SEqHatDot_2, SEqHatDot_3, SEqHatDot_4 float64                                                                         // estimated direction of the gyroscope error
-	var w_err_x, w_err_y, w_err_z float64                                                                                                  // estimated direction of the gyroscope
-	var h_x, h_y, h_z float64                                                                                                              // computed flux in the earth frame
+	// // local system variables
+	// var norm float64                                                                                                                       // vector norm
+	// var SEqDot_omega_1, SEqDot_omega_2, SEqDot_omega_3, SEqDot_omega_4 float64                                                             // quaternion rate from gyroscopes elements
+	// var f_1, f_2, f_3, f_4, f_5, f_6 float64                                                                                               // objective function elements
+	// var J_11or24, J_12or23, J_13or22, J_14or21, J_32, J_33, J_41, J_42, J_43, J_44, J_51, J_52, J_53, J_54, J_61, J_62, J_63, J_64 float64 //objective function Jacobian elements
+	// var SEqHatDot_1, SEqHatDot_2, SEqHatDot_3, SEqHatDot_4 float64                                                                         // estimated direction of the gyroscope error
+	// var w_err_x, w_err_y, w_err_z float64                                                                                                  // estimated direction of the gyroscope
+	// var h_x, h_y, h_z float64                                                                                                              // computed flux in the earth frame
 
-	// auxiliary variables to avoid reapeated calcualtions
-	var halfSEq_1 float64 = 0.5 * SEq_1
-	var halfSEq_2 float64 = 0.5 * SEq_2
-	var halfSEq_3 float64 = 0.5 * SEq_3
-	var halfSEq_4 float64 = 0.5 * SEq_4
-	var twoSEq_1 float64 = 2.0 * SEq_1
-	var twoSEq_2 float64 = 2.0 * SEq_2
-	var twoSEq_3 float64 = 2.0 * SEq_3
-	var twoSEq_4 float64 = 2.0 * SEq_4
-	var twob_x float64 = 2.0 * b_x
-	var twob_z float64 = 2.0 * b_z
-	var twob_xSEq_1 float64 = 2.0 * b_x * SEq_1
-	var twob_xSEq_2 float64 = 2.0 * b_x * SEq_2
-	var twob_xSEq_3 float64 = 2.0 * b_x * SEq_3
-	var twob_xSEq_4 float64 = 2.0 * b_x * SEq_4
-	var twob_zSEq_1 float64 = 2.0 * b_z * SEq_1
-	var twob_zSEq_2 float64 = 2.0 * b_z * SEq_2
-	var twob_zSEq_3 float64 = 2.0 * b_z * SEq_3
-	var twob_zSEq_4 float64 = 2.0 * b_z * SEq_4
-	var SEq_1SEq_2 float64
-	var SEq_1SEq_3 float64 = SEq_1 * SEq_3
-	var SEq_1SEq_4 float64
-	var SEq_2SEq_3 float64
-	var SEq_2SEq_4 float64 = SEq_2 * SEq_4
-	var SEq_3SEq_4 float64
-	var twom_x float64 = 2.0 * m_x
-	var twom_y float64 = 2.0 * m_y
-	var twom_z float64 = 2.0 * m_z
+	// // auxiliary variables to avoid reapeated calcualtions
+	// var halfSEq_1 float64 = 0.5 * SEq_1
+	// var halfSEq_2 float64 = 0.5 * SEq_2
+	// var halfSEq_3 float64 = 0.5 * SEq_3
+	// var halfSEq_4 float64 = 0.5 * SEq_4
+	// var twoSEq_1 float64 = 2.0 * SEq_1
+	// var twoSEq_2 float64 = 2.0 * SEq_2
+	// var twoSEq_3 float64 = 2.0 * SEq_3
+	// var twoSEq_4 float64 = 2.0 * SEq_4
+	// var twob_x float64 = 2.0 * b_x
+	// var twob_z float64 = 2.0 * b_z
+	// var twob_xSEq_1 float64 = 2.0 * b_x * SEq_1
+	// var twob_xSEq_2 float64 = 2.0 * b_x * SEq_2
+	// var twob_xSEq_3 float64 = 2.0 * b_x * SEq_3
+	// var twob_xSEq_4 float64 = 2.0 * b_x * SEq_4
+	// var twob_zSEq_1 float64 = 2.0 * b_z * SEq_1
+	// var twob_zSEq_2 float64 = 2.0 * b_z * SEq_2
+	// var twob_zSEq_3 float64 = 2.0 * b_z * SEq_3
+	// var twob_zSEq_4 float64 = 2.0 * b_z * SEq_4
+	// var SEq_1SEq_2 float64
+	// var SEq_1SEq_3 float64 = SEq_1 * SEq_3
+	// var SEq_1SEq_4 float64
+	// var SEq_2SEq_3 float64
+	// var SEq_2SEq_4 float64 = SEq_2 * SEq_4
+	// var SEq_3SEq_4 float64
+	// var twom_x float64 = 2.0 * m_x
+	// var twom_y float64 = 2.0 * m_y
+	// var twom_z float64 = 2.0 * m_z
 
-	// normalise the accelerometer measurement
-	norm = math.Sqrt(a_x*a_x + a_y*a_y + a_z*a_z)
-	a_x /= norm
-	a_y /= norm
-	a_z /= norm
+	// // normalise the accelerometer measurement
+	// norm = math.Sqrt(a_x*a_x + a_y*a_y + a_z*a_z)
+	// a_x /= norm
+	// a_y /= norm
+	// a_z /= norm
 
-	// normalise the magnetometer measurement
-	norm = math.Sqrt(m_x*m_x + m_y*m_y + m_z*m_z)
-	m_x /= norm
-	m_y /= norm
-	m_z /= norm
+	// // normalise the magnetometer measurement
+	// norm = math.Sqrt(m_x*m_x + m_y*m_y + m_z*m_z)
+	// m_x /= norm
+	// m_y /= norm
+	// m_z /= norm
 
-	// compute the objective function and Jacobian
-	f_1 = twoSEq_2*SEq_4 - twoSEq_1*SEq_3 - a_x
-	f_2 = twoSEq_1*SEq_2 + twoSEq_3*SEq_4 - a_y
-	f_3 = 1.0 - twoSEq_2*SEq_2 - twoSEq_3*SEq_3 - a_z
-	f_4 = twob_x*(0.5-SEq_3*SEq_3-SEq_4*SEq_4) + twob_z*(SEq_2SEq_4-SEq_1SEq_3) - m_x
-	f_5 = twob_x*(SEq_2*SEq_3-SEq_1*SEq_4) + twob_z*(SEq_1*SEq_2+SEq_3*SEq_4) - m_y
-	f_6 = twob_x*(SEq_1SEq_3+SEq_2SEq_4) + twob_z*(0.5-SEq_2*SEq_2-SEq_3*SEq_3) - m_z
-	J_11or24 = twoSEq_3 // J_11 negated in matrix multiplication
-	J_12or23 = 2.0 * SEq_4
-	J_13or22 = twoSEq_1 // J_12 negated in matrix multiplication
-	J_14or21 = twoSEq_2
-	J_32 = 2.0 * J_14or21 // negated in matrix multiplication
-	J_33 = 2.0 * J_11or24 // negated in matrix multiplication
-	J_41 = twob_zSEq_3    // negated in matrix multiplication
-	J_42 = twob_zSEq_4
-	J_43 = 2.0*twob_xSEq_3 + twob_zSEq_1 // negated in matrix multiplication
-	J_44 = 2.0*twob_xSEq_4 - twob_zSEq_2 // negated in matrix multiplication
-	J_51 = twob_xSEq_4 - twob_zSEq_2     // negated in matrix multiplication
-	J_52 = twob_xSEq_3 + twob_zSEq_1
-	J_53 = twob_xSEq_2 + twob_zSEq_4
-	J_54 = twob_xSEq_1 - twob_zSEq_3 // negated in matrix multiplication
-	J_61 = twob_xSEq_3
-	J_62 = twob_xSEq_4 - 2.0*twob_zSEq_2
-	J_63 = twob_xSEq_1 - 2.0*twob_zSEq_3
-	J_64 = twob_xSEq_2
+	// // compute the objective function and Jacobian
+	// f_1 = twoSEq_2*SEq_4 - twoSEq_1*SEq_3 - a_x
+	// f_2 = twoSEq_1*SEq_2 + twoSEq_3*SEq_4 - a_y
+	// f_3 = 1.0 - twoSEq_2*SEq_2 - twoSEq_3*SEq_3 - a_z
+	// f_4 = twob_x*(0.5-SEq_3*SEq_3-SEq_4*SEq_4) + twob_z*(SEq_2SEq_4-SEq_1SEq_3) - m_x
+	// f_5 = twob_x*(SEq_2*SEq_3-SEq_1*SEq_4) + twob_z*(SEq_1*SEq_2+SEq_3*SEq_4) - m_y
+	// f_6 = twob_x*(SEq_1SEq_3+SEq_2SEq_4) + twob_z*(0.5-SEq_2*SEq_2-SEq_3*SEq_3) - m_z
+	// J_11or24 = twoSEq_3 // J_11 negated in matrix multiplication
+	// J_12or23 = 2.0 * SEq_4
+	// J_13or22 = twoSEq_1 // J_12 negated in matrix multiplication
+	// J_14or21 = twoSEq_2
+	// J_32 = 2.0 * J_14or21 // negated in matrix multiplication
+	// J_33 = 2.0 * J_11or24 // negated in matrix multiplication
+	// J_41 = twob_zSEq_3    // negated in matrix multiplication
+	// J_42 = twob_zSEq_4
+	// J_43 = 2.0*twob_xSEq_3 + twob_zSEq_1 // negated in matrix multiplication
+	// J_44 = 2.0*twob_xSEq_4 - twob_zSEq_2 // negated in matrix multiplication
+	// J_51 = twob_xSEq_4 - twob_zSEq_2     // negated in matrix multiplication
+	// J_52 = twob_xSEq_3 + twob_zSEq_1
+	// J_53 = twob_xSEq_2 + twob_zSEq_4
+	// J_54 = twob_xSEq_1 - twob_zSEq_3 // negated in matrix multiplication
+	// J_61 = twob_xSEq_3
+	// J_62 = twob_xSEq_4 - 2.0*twob_zSEq_2
+	// J_63 = twob_xSEq_1 - 2.0*twob_zSEq_3
+	// J_64 = twob_xSEq_2
 
-	// compute the gradient (matrix multiplication)
-	SEqHatDot_1 = J_14or21*f_2 - J_11or24*f_1 - J_41*f_4 - J_51*f_5 + J_61*f_6
-	SEqHatDot_2 = J_12or23*f_1 + J_13or22*f_2 - J_32*f_3 + J_42*f_4 + J_52*f_5 + J_62*f_6
-	SEqHatDot_3 = J_12or23*f_2 - J_33*f_3 - J_13or22*f_1 - J_43*f_4 + J_53*f_5 + J_63*f_6
-	SEqHatDot_4 = J_14or21*f_1 + J_11or24*f_2 - J_44*f_4 - J_54*f_5 + J_64*f_6
+	// // compute the gradient (matrix multiplication)
+	// SEqHatDot_1 = J_14or21*f_2 - J_11or24*f_1 - J_41*f_4 - J_51*f_5 + J_61*f_6
+	// SEqHatDot_2 = J_12or23*f_1 + J_13or22*f_2 - J_32*f_3 + J_42*f_4 + J_52*f_5 + J_62*f_6
+	// SEqHatDot_3 = J_12or23*f_2 - J_33*f_3 - J_13or22*f_1 - J_43*f_4 + J_53*f_5 + J_63*f_6
+	// SEqHatDot_4 = J_14or21*f_1 + J_11or24*f_2 - J_44*f_4 - J_54*f_5 + J_64*f_6
 
-	// normalise the gradient to estimate direction of the gyroscope error
-	norm = math.Sqrt(SEqHatDot_1*SEqHatDot_1 + SEqHatDot_2*SEqHatDot_2 + SEqHatDot_3*SEqHatDot_3 + SEqHatDot_4*SEqHatDot_4)
-	SEqHatDot_1 = SEqHatDot_1 / norm
-	SEqHatDot_2 = SEqHatDot_2 / norm
-	SEqHatDot_3 = SEqHatDot_3 / norm
-	SEqHatDot_4 = SEqHatDot_4 / norm
+	// // normalise the gradient to estimate direction of the gyroscope error
+	// norm = math.Sqrt(SEqHatDot_1*SEqHatDot_1 + SEqHatDot_2*SEqHatDot_2 + SEqHatDot_3*SEqHatDot_3 + SEqHatDot_4*SEqHatDot_4)
+	// SEqHatDot_1 = SEqHatDot_1 / norm
+	// SEqHatDot_2 = SEqHatDot_2 / norm
+	// SEqHatDot_3 = SEqHatDot_3 / norm
+	// SEqHatDot_4 = SEqHatDot_4 / norm
 
-	// compute angular estimated direction of the gyroscope error
-	w_err_x = twoSEq_1*SEqHatDot_2 - twoSEq_2*SEqHatDot_1 - twoSEq_3*SEqHatDot_4 + twoSEq_4*SEqHatDot_3
-	w_err_y = twoSEq_1*SEqHatDot_3 + twoSEq_2*SEqHatDot_4 - twoSEq_3*SEqHatDot_1 - twoSEq_4*SEqHatDot_2
-	w_err_z = twoSEq_1*SEqHatDot_4 - twoSEq_2*SEqHatDot_3 + twoSEq_3*SEqHatDot_2 - twoSEq_4*SEqHatDot_1
+	// // compute angular estimated direction of the gyroscope error
+	// w_err_x = twoSEq_1*SEqHatDot_2 - twoSEq_2*SEqHatDot_1 - twoSEq_3*SEqHatDot_4 + twoSEq_4*SEqHatDot_3
+	// w_err_y = twoSEq_1*SEqHatDot_3 + twoSEq_2*SEqHatDot_4 - twoSEq_3*SEqHatDot_1 - twoSEq_4*SEqHatDot_2
+	// w_err_z = twoSEq_1*SEqHatDot_4 - twoSEq_2*SEqHatDot_3 + twoSEq_3*SEqHatDot_2 - twoSEq_4*SEqHatDot_1
 
-	// compute and remove the gyroscope baises
-	w_bx += w_err_x * deltat * zeta
-	w_by += w_err_y * deltat * zeta
-	w_bz += w_err_z * deltat * zeta
-	w_x -= w_bx
-	w_y -= w_by
-	w_z -= w_bz
+	// // compute and remove the gyroscope baises
+	// w_bx += w_err_x * deltat * zeta
+	// w_by += w_err_y * deltat * zeta
+	// w_bz += w_err_z * deltat * zeta
+	// w_x -= w_bx
+	// w_y -= w_by
+	// w_z -= w_bz
 
-	// compute the quaternion rate measured by gyroscopes
-	SEqDot_omega_1 = -halfSEq_2*w_x - halfSEq_3*w_y - halfSEq_4*w_z
-	SEqDot_omega_2 = halfSEq_1*w_x + halfSEq_3*w_z - halfSEq_4*w_y
-	SEqDot_omega_3 = halfSEq_1*w_y - halfSEq_2*w_z + halfSEq_4*w_x
-	SEqDot_omega_4 = halfSEq_1*w_z + halfSEq_2*w_y - halfSEq_3*w_x
+	// // compute the quaternion rate measured by gyroscopes
+	// SEqDot_omega_1 = -halfSEq_2*w_x - halfSEq_3*w_y - halfSEq_4*w_z
+	// SEqDot_omega_2 = halfSEq_1*w_x + halfSEq_3*w_z - halfSEq_4*w_y
+	// SEqDot_omega_3 = halfSEq_1*w_y - halfSEq_2*w_z + halfSEq_4*w_x
+	// SEqDot_omega_4 = halfSEq_1*w_z + halfSEq_2*w_y - halfSEq_3*w_x
 
-	// compute then integrate the estimated quaternion rate
-	SEq_1 += (SEqDot_omega_1 - (beta * SEqHatDot_1)) * deltat
-	SEq_2 += (SEqDot_omega_2 - (beta * SEqHatDot_2)) * deltat
-	SEq_3 += (SEqDot_omega_3 - (beta * SEqHatDot_3)) * deltat
-	SEq_4 += (SEqDot_omega_4 - (beta * SEqHatDot_4)) * deltat
+	// // compute then integrate the estimated quaternion rate
+	// SEq_1 += (SEqDot_omega_1 - (beta * SEqHatDot_1)) * deltat
+	// SEq_2 += (SEqDot_omega_2 - (beta * SEqHatDot_2)) * deltat
+	// SEq_3 += (SEqDot_omega_3 - (beta * SEqHatDot_3)) * deltat
+	// SEq_4 += (SEqDot_omega_4 - (beta * SEqHatDot_4)) * deltat
 
-	// normalise quaternion
-	norm = math.Sqrt(SEq_1*SEq_1 + SEq_2*SEq_2 + SEq_3*SEq_3 + SEq_4*SEq_4)
-	SEq_1 /= norm
-	SEq_2 /= norm
-	SEq_3 /= norm
-	SEq_4 /= norm
+	// // normalise quaternion
+	// norm = math.Sqrt(SEq_1*SEq_1 + SEq_2*SEq_2 + SEq_3*SEq_3 + SEq_4*SEq_4)
+	// SEq_1 /= norm
+	// SEq_2 /= norm
+	// SEq_3 /= norm
+	// SEq_4 /= norm
 
-	// compute flux in the earth frame
-	SEq_1SEq_2 = SEq_1 * SEq_2 // recompute auxiliary variables
-	SEq_1SEq_3 = SEq_1 * SEq_3
-	SEq_1SEq_4 = SEq_1 * SEq_4
-	SEq_3SEq_4 = SEq_3 * SEq_4
-	SEq_2SEq_3 = SEq_2 * SEq_3
-	SEq_2SEq_4 = SEq_2 * SEq_4
-	h_x = twom_x*(0.5-SEq_3*SEq_3-SEq_4*SEq_4) + twom_y*(SEq_2SEq_3-SEq_1SEq_4) + twom_z*(SEq_2SEq_4+SEq_1SEq_3)
-	h_y = twom_x*(SEq_2SEq_3+SEq_1SEq_4) + twom_y*(0.5-SEq_2*SEq_2-SEq_4*SEq_4) + twom_z*(SEq_3SEq_4-SEq_1SEq_2)
-	h_z = twom_x*(SEq_2SEq_4-SEq_1SEq_3) + twom_y*(SEq_3SEq_4+SEq_1SEq_2) + twom_z*(0.5-SEq_2*SEq_2-SEq_3*SEq_3)
+	// // compute flux in the earth frame
+	// SEq_1SEq_2 = SEq_1 * SEq_2 // recompute auxiliary variables
+	// SEq_1SEq_3 = SEq_1 * SEq_3
+	// SEq_1SEq_4 = SEq_1 * SEq_4
+	// SEq_3SEq_4 = SEq_3 * SEq_4
+	// SEq_2SEq_3 = SEq_2 * SEq_3
+	// SEq_2SEq_4 = SEq_2 * SEq_4
+	// h_x = twom_x*(0.5-SEq_3*SEq_3-SEq_4*SEq_4) + twom_y*(SEq_2SEq_3-SEq_1SEq_4) + twom_z*(SEq_2SEq_4+SEq_1SEq_3)
+	// h_y = twom_x*(SEq_2SEq_3+SEq_1SEq_4) + twom_y*(0.5-SEq_2*SEq_2-SEq_4*SEq_4) + twom_z*(SEq_3SEq_4-SEq_1SEq_2)
+	// h_z = twom_x*(SEq_2SEq_4-SEq_1SEq_3) + twom_y*(SEq_3SEq_4+SEq_1SEq_2) + twom_z*(0.5-SEq_2*SEq_2-SEq_3*SEq_3)
 
-	// normalise the flux vector to have only components in the x and z
-	b_x = math.Sqrt((h_x * h_x) + (h_y * h_y))
-	b_z = h_z
+	// // normalise the flux vector to have only components in the x and z
+	// b_x = math.Sqrt((h_x * h_x) + (h_y * h_y))
+	// b_z = h_z
 }
 
 func isAHRSValid() bool {

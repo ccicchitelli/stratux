@@ -5,11 +5,11 @@ import (
 	"time"
 )
 
-var sampleFreq float64 = 1000.0
+var sampleFreq float64 = 500.0
 var q0, q1, q2, q3 float64 = 1.0, 0.0, 0.0, 0.0 // estimated orientation quaternion elements with initial conditions
 var magX, magY, magZ float64                    // magnetometer measurements
 
-var deltat float64 = 0.001 // sampling period in seconds (shown as 2 ms)
+var deltat float64 = 0.002 // sampling period in seconds (shown as 2 ms)
 var beta float64 = 2
 var zeta float64 = 0
 var a_x, a_y, a_z float64                                   // accelerometer measurements

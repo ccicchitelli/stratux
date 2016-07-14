@@ -225,8 +225,8 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 func AHRSupdate(w_x, w_y, w_z, a_x, a_y, a_z, m_x, m_y, m_z float64) {
 	initCount++
 	if initCount > 7500 { // 15 seconds
-		beta = 0.09
-		zeta = 0.007
+		beta = 0.1
+		zeta = 0.006
 	}
 
 	// local system variables

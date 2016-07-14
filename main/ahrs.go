@@ -21,9 +21,9 @@ var w_bx, w_by, w_bz float64 = 0.0, 0.0, 0.0                // estimate gyroscop
 
 var attitudeX, attitudeY, attitudeZ, heading float64 = 0.0, 0.0, 0.0, 0.0
 var headingHistory [500]float64
-var attitudeXhistory [10]float64
-var attitudeYhistory [10]float64
-var attitudeZhistory [10]float64
+var attitudeXhistory [15]float64
+var attitudeYhistory [15]float64
+var attitudeZhistory [15]float64
 var initCount = 0
 
 // Calculates the current heading, optionally compensating for the current attitude
@@ -225,7 +225,7 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 func AHRSupdate(w_x, w_y, w_z, a_x, a_y, a_z, m_x, m_y, m_z float64) {
 	initCount++
 	if initCount > 7500 { // 15 seconds
-		beta = 0.5
+		beta = 0.2
 		zeta = 0.015
 	}
 

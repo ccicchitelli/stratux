@@ -81,14 +81,14 @@ func CalculateCurrentAttitudeXYZ() {
 		total += attitudeXhistory[i]
 	}
 
-	attitudeX = total / float64(len(attitudeXhistory))
+	attitudeX = 1 //total / float64(len(attitudeXhistory))
 
 	total = 0
 	for i := len(attitudeYhistory) - 1; i >= 0; i-- {
 		total += attitudeYhistory[i]
 	}
 
-	attitudeY = total / float64(len(attitudeYhistory))
+	attitudeY = 2 //total / float64(len(attitudeYhistory))
 
 	total = 0
 	for i := len(attitudeZhistory) - 1; i >= 0; i-- {

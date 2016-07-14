@@ -9,9 +9,9 @@ var sampleFreq float64 = 500.0
 var q0, q1, q2, q3 float64 = 1.0, 0.0, 0.0, 0.0 // estimated orientation quaternion elements with initial conditions
 var magX, magY, magZ float64                    // magnetometer measurements
 
-var deltat float64 = 0.002 // sampling period in seconds (shown as 2 ms)
+var deltat float64 = 0.001 // sampling period in seconds (shown as 2 ms)
 var beta float64 = 2
-var zeta float64 = 0.003                                    //0.015
+var zeta float64 = 0.015
 var a_x, a_y, a_z float64                                   // accelerometer measurements
 var w_x, w_y, w_z float64                                   // gyroscope measurements in rad/s
 var m_x, m_y, m_z float64                                   // magnetometer measurements
@@ -226,6 +226,7 @@ func AHRSupdate(w_x, w_y, w_z, a_x, a_y, a_z, m_x, m_y, m_z float64) {
 	initCount++
 	if initCount > 10000 { // 10 seconds
 		beta = 0.05
+		//zeta = 0.003
 	}
 
 	// local system variables

@@ -57,14 +57,14 @@ func CalculateHeading() {
 // Calculates the current attitude represented as X (roll), Y (pitch), and Z (yaw) values as Euler angles.
 func CalculateCurrentAttitudeXYZ() {
 	var q0a, q1a, q2a, q3a float64
-	q0a = q0
-	q1a = q1
-	q2a = q2
-	q3a = q3
-	// q0a = SEq_1
-	// q1a = SEq_2
-	// q2a = SEq_3
-	// q3a = SEq_4
+	// q0a = q0
+	// q1a = q1
+	// q2a = q2
+	// q3a = q3
+	q0a = SEq_1
+	q1a = SEq_2
+	q2a = SEq_3
+	q3a = SEq_4
 
 	for i := len(attitudeXhistory) - 1; i > 0; i-- {
 		attitudeXhistory[i] = attitudeXhistory[i-1]

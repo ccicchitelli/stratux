@@ -9,7 +9,7 @@ var sampleFreq float64 = 500.0
 var q0, q1, q2, q3 float64 = 1.0, 0.0, 0.0, 0.0 // estimated orientation quaternion elements with initial conditions
 var magX, magY, magZ float64                    // magnetometer measurements
 
-var deltat float64 = 0.001 // sampling period in seconds (shown as 2 ms)
+var deltat float64 = 0.002 // sampling period in seconds (shown as 2 ms)
 var beta float64 = 2
 var zeta float64 = 0.003                                    //0.015
 var a_x, a_y, a_z float64                                   // accelerometer measurements
@@ -57,14 +57,14 @@ func CalculateHeading() {
 // Calculates the current attitude represented as X (roll), Y (pitch), and Z (yaw) values as Euler angles.
 func CalculateCurrentAttitudeXYZ() {
 	var q0a, q1a, q2a, q3a float64
-	// q0a = q0
-	// q1a = q1
-	// q2a = q2
-	// q3a = q3
-	q0a = SEq_1
-	q1a = SEq_2
-	q2a = SEq_3
-	q3a = SEq_4
+	q0a = q0
+	q1a = q1
+	q2a = q2
+	q3a = q3
+	// q0a = SEq_1
+	// q1a = SEq_2
+	// q2a = SEq_3
+	// q3a = SEq_4
 
 	for i := len(attitudeXhistory) - 1; i > 0; i-- {
 		attitudeXhistory[i] = attitudeXhistory[i-1]

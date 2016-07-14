@@ -244,34 +244,34 @@ func AHRSupdateNew(w_x, w_y, w_z, a_x, a_y, a_z, m_x, m_y, m_z float64) {
 	var w_err_x, w_err_y, w_err_z float64 // estimated direction of the gyroscope
 	var h_x, h_y, h_z float64 // computed flux in the earth frame
 
-	// axulirary variables to avoid reapeated calcualtions
-	var halfSEq_1 = 0.5 * SEq_1 float64
-	var halfSEq_2 = 0.5 * SEq_2 float64
-	var halfSEq_3 = 0.5 * SEq_3 float64
-	var halfSEq_4 = 0.5 * SEq_4 float64
-	var twoSEq_1 = 2.0 * SEq_1 float64
-	var twoSEq_2 = 2.0 * SEq_2 float64
-	var twoSEq_3 = 2.0 * SEq_3 float64
-	var twoSEq_4 = 2.0 * SEq_4 float64
-	var twob_x = 2.0 * b_x float64
-	var twob_z = 2.0 * b_z float64
-	var twob_xSEq_1 = 2.0 * b_x * SEq_1 float64
-	var twob_xSEq_2 = 2.0 * b_x * SEq_2 float64
-	var twob_xSEq_3 = 2.0 * b_x * SEq_3 float64
-	var twob_xSEq_4 = 2.0 * b_x * SEq_4 float64
-	var twob_zSEq_1 = 2.0 * b_z * SEq_1 float64
-	var twob_zSEq_2 = 2.0 * b_z * SEq_2 float64
-	var twob_zSEq_3 = 2.0 * b_z * SEq_3 float64
-	var twob_zSEq_4 = 2.0 * b_z * SEq_4 float64
+	// auxiliary variables to avoid reapeated calcualtions
+	var halfSEq_1 float64 = 0.5 * SEq_1
+	var halfSEq_2 float64 = 0.5 * SEq_2
+	var halfSEq_3 float64 = 0.5 * SEq_3
+	var halfSEq_4 float64 = 0.5 * SEq_4
+	var twoSEq_1 float64 = 2.0 * SEq_1
+	var twoSEq_2 float64 = 2.0 * SEq_2
+	var twoSEq_3 float64 = 2.0 * SEq_3
+	var twoSEq_4 float64 = 2.0 * SEq_4
+	var twob_x float64 = 2.0 * b_x
+	var twob_z float64 = 2.0 * b_z
+	var twob_xSEq_1 float64 = 2.0 * b_x * SEq_1
+	var twob_xSEq_2 float64 = 2.0 * b_x * SEq_2
+	var twob_xSEq_3 float64 = 2.0 * b_x * SEq_3
+	var twob_xSEq_4 float64 = 2.0 * b_x * SEq_4
+	var twob_zSEq_1 float64 = 2.0 * b_z * SEq_1
+	var twob_zSEq_2 float64 = 2.0 * b_z * SEq_2
+	var twob_zSEq_3 float64 = 2.0 * b_z * SEq_3
+	var twob_zSEq_4 float64 = 2.0 * b_z * SEq_4
 	var SEq_1SEq_2 float64
-	var SEq_1SEq_3 = SEq_1 * SEq_3 float64
+	var SEq_1SEq_3 float64 = SEq_1 * SEq_3
 	var SEq_1SEq_4 float64
 	var SEq_2SEq_3 float64
-	var SEq_2SEq_4 = SEq_2 * SEq_4 float64
+	var SEq_2SEq_4 float64 = SEq_2 * SEq_4
 	var SEq_3SEq_4 float64
-	var twom_x = 2.0 * m_x float64
-	var twom_y = 2.0 * m_y float64
-	var twom_z = 2.0 * m_z float64
+	var twom_x float64 = 2.0 * m_x
+	var twom_y float64 = 2.0 * m_y
+	var twom_z float64 = 2.0 * m_z
 
 	// normalise the accelerometer measurement
 	norm = math.Sqrt(a_x * a_x + a_y * a_y + a_z * a_z);
@@ -357,7 +357,7 @@ func AHRSupdateNew(w_x, w_y, w_z, a_x, a_y, a_z, m_x, m_y, m_z float64) {
 	SEq_4 /= norm;
 	
 	// compute flux in the earth frame
-	SEq_1SEq_2 = SEq_1 * SEq_2; 					// recompute auxilary variables
+	SEq_1SEq_2 = SEq_1 * SEq_2; 					// recompute auxiliary variables
 	SEq_1SEq_3 = SEq_1 * SEq_3;
 	SEq_1SEq_4 = SEq_1 * SEq_4;
 	SEq_3SEq_4 = SEq_3 * SEq_4;

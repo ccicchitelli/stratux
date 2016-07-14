@@ -6,14 +6,13 @@ import (
 )
 
 var sampleFreq float64 = 500.0
-var deltat float64 = 0.002						// sampling period in seconds (shown as 2 ms)
-var beta float64 = 2
-var zeta float64 = 0.003 //0.015
 var q0, q1, q2, q3 float64 = 1.0, 0.0, 0.0, 0.0	// estimated orientation quaternion elements with initial conditions
 var magX, magY, magZ float64					// magnetometer measurements
-var bX, bZ float64 = 1.0, 0.0					// reference direction of flux in earth frame
 
 
+var deltat float64 = 0.001						// sampling period in seconds (shown as 2 ms)
+var beta float64 = 2
+var zeta float64 = 0.003 //0.015
 var a_x, a_y, a_z float64 									// accelerometer measurements
 var w_x, w_y, w_z float64									// gyroscope measurements in rad/s
 var m_x, m_y, m_z float64									// magnetometer measurements
@@ -231,6 +230,11 @@ func AHRSupdate(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 }
 
 func AHRSupdateNew(w_x, w_y, w_z, a_x, a_y, a_z, m_x, m_y, m_z float64) {
+	initCount++
+	// if initCount > 5000 { // 10 seconds
+	// 	beta = 0.05
+	// }
+
 	// local system variables
 	var norm float64 // vector norm
 	var SEqDot_omega_1, SEqDot_omega_2, SEqDot_omega_3, SEqDot_omega_4 float64 // quaternion rate from gyroscopes elements

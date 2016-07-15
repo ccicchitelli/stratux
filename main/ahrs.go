@@ -22,9 +22,9 @@ var w_bx, w_by, w_bz float64 = 0.0, 0.0, 0.0                // estimate gyroscop
 
 var attitudeX, attitudeY, attitudeZ, heading, gForce float64 = 0.0, 0.0, 0.0, 0.0, 0.0
 var headingHistory [500]float64
-var attitudeXhistory [30]float64
-var attitudeYhistory [30]float64
-var attitudeZhistory [30]float64
+var attitudeXhistory [60]float64
+var attitudeYhistory [60]float64
+var attitudeZhistory [60]float64
 var initCount = 0
 
 //var fusionCount = 0

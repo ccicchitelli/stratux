@@ -145,10 +145,10 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 	if !((ax == 0.0) && (ay == 0.0) && (az == 0.0)) {
 		//measure g-force
 		gForce = math.Sqrt(ax*ax + ay*ay + az*az)
-
+		var test = false
 		// continue with accelerometer compensation only if near 1 G, otherwise run gryo-only for this cycle
 		//if gForce >= 0.9 && gForce <= 1.1 {
-		if gForce <= 0.001 {
+		if test {
 			// Normalise accelerometer measurement
 			recipNorm = invSqrt(ax*ax + ay*ay + az*az)
 			ax *= recipNorm

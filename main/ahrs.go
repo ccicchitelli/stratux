@@ -153,7 +153,7 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 		gForce := math.Sqrt(ax*ax + ay*ay + az*az)
 
 		// continue with accelerometer compensation only if near 1 G, otherwise run gryo-only for this cycle
-		if gForce >= 0.9 && gForce <= 1.1 {
+		if gForce >= 0.99 && gForce <= 1.01 {
 
 			// Normalise magnetometer measurement
 			recipNorm = invSqrt(mx*mx + my*my + mz*mz)

@@ -1243,8 +1243,8 @@ func attitudeReaderSender() {
 		mySituation.mu_Attitude.Lock()
 		mySituation.Pitch = pitch
 		mySituation.Roll = roll
-		mySituation.Yaw = heading
-		mySituation.Gyro_heading = yaw
+		mySituation.Yaw = yaw
+		mySituation.Gyro_heading = heading
 		mySituation.LastAttitudeTime = stratuxClock.Time
 
 		// Send, if valid.

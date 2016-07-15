@@ -121,14 +121,14 @@ func GetCurrentAttitudeQ() (float64, float64, float64, float64) {
 func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 	initCount++
 	if initCount > 5000 { // 10 seconds
-		//beta = 0.05
+		beta = 0.05
 	}
 
 	var recipNorm float64                  // vector norm
 	var qDot1, qDot2, qDot3, qDot4 float64 // quaternion rate from gyroscopes elements
 	var s0, s1, s2, s3 float64             // estimated direction of the gyroscope error
 	var hx, hy float64
-	var _2q0mx, _2q0my, _2q0mz, _2q1mx, _2bx, _2bz, _4bx, _4bz, _2q0q2, _2q2q3, _2q0, _2q1, _2q2, _2q3, q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3 float64
+	var _2q0mx, _2q0my, _2q0mz, _2q1mx, _2bx, _2bz, _4bx, _4bz, _8bx, _8bz, _2q0, _2q1, _2q2, _2q3, q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3 float64
 	//_2q0q2, _2q2q3, _8bx, _8bz,
 	// Return if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
 	if (mx == 0.0) && (my == 0.0) && (mz == 0.0) {
@@ -185,8 +185,8 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 			_2q1 = 2.0 * q1
 			_2q2 = 2.0 * q2
 			_2q3 = 2.0 * q3
-			_2q0q2 = 2.0 * q0 * q2
-			_2q2q3 = 2.0 * q2 * q3
+			// _2q0q2 = 2.0 * q0 * q2
+			// _2q2q3 = 2.0 * q2 * q3
 			q0q0 = q0 * q0
 			q0q1 = q0 * q1
 			q0q2 = q0 * q2
@@ -211,22 +211,22 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 			_2bz = -_2q0mx*q2 + _2q0my*q1 + mz*q0q0 + _2q1mx*q3 - mz*q1q1 + _2q2*my*q3 - mz*q2q2 + mz*q3q3
 			_4bx = 2.0 * _2bx
 			_4bz = 2.0 * _2bz
-			// _8bx = 2.0 * _4bx
-			// _8bz = 2.0 * _4bz
+			_8bx = 2.0 * _4bx
+			_8bz = 2.0 * _4bz
 
 			// Gradient decent algorithm corrective step
 			// s0 = -_2q2*(2*(q1q3-q0q2)-ax) + _2q1*(2*(q0q1+q2q3)-ay) + -_4bz*q2*(_4bx*(0.5-q2q2-q3q3)+_4bz*(q1q3-q0q2)-mx) + (-_4bx*q3+_4bz*q1)*(_4bx*(q1q2-q0q3)+_4bz*(q0q1+q2q3)-my) + _4bx*q2*(_4bx*(q0q2+q1q3)+_4bz*(0.5-q1q1-q2q2)-mz)
 			// s1 = _2q3*(2*(q1q3-q0q2)-ax) + _2q0*(2*(q0q1+q2q3)-ay) + -4*q1*(2*(0.5-q1q1-q2q2)-az) + _4bz*q3*(_4bx*(0.5-q2q2-q3q3)+_4bz*(q1q3-q0q2)-mx) + (_4bx*q2+_4bz*q0)*(_4bx*(q1q2-q0q3)+_4bz*(q0q1+q2q3)-my) + (_4bx*q3-_8bz*q1)*(_4bx*(q0q2+q1q3)+_4bz*(0.5-q1q1-q2q2)-mz)
 			// s2 = -_2q0*(2*(q1q3-q0q2)-ax) + _2q3*(2*(q0q1+q2q3)-ay) + (-4*q2)*(2*(0.5-q1q1-q2q2)-az) + (-_8bx*q2-_4bz*q0)*(_4bx*(0.5-q2q2-q3q3)+_4bz*(q1q3-q0q2)-mx) + (_4bx*q1+_4bz*q3)*(_4bx*(q1q2-q0q3)+_4bz*(q0q1+q2q3)-my) + (_4bx*q0-_8bz*q2)*(_4bx*(q0q2+q1q3)+_4bz*(0.5-q1q1-q2q2)-mz)
 			// s3 = _2q1*(2*(q1q3-q0q2)-ax) + _2q2*(2*(q0q1+q2q3)-ay) + (-_8bx*q3+_4bz*q1)*(_4bx*(0.5-q2q2-q3q3)+_4bz*(q1q3-q0q2)-mx) + (-_4bx*q0+_4bz*q2)*(_4bx*(q1q2-q0q3)+_4bz*(q0q1+q2q3)-my) + (_4bx*q1)*(_4bx*(q0q2+q1q3)+_4bz*(0.5-q1q1-q2q2)-mz)
-			// s0 = -_2q2*(2.0*(q1q3-q0q2)-ax) + _2q1*(2.0*(q0q1+q2q3)-ay) + -_4bz*q2*(_4bx*(0.5-q2q2-q3q3)+_4bz*(q1q3-q0q2)-mx) + (-_4bx*q3+_4bz*q1)*(_4bx*(q1q2-q0q3)+_4bz*(q0q1+q2q3)-my) + _4bx*q2*(_4bx*(q0q2+q1q3)+_4bz*(0.5-q1q1-q2q2)-mz)
-			// s1 = _2q3*(2.0*(q1q3-q0q2)-ax) + _2q0*(2.0*(q0q1+q2q3)-ay) + -4.0*q1*(2.0*(0.5-q1q1-q2q2)-az) + _4bz*q3*(_4bx*(0.5-q2q2-q3q3)+_4bz*(q1q3-q0q2)-mx) + (_4bx*q2+_4bz*q0)*(_4bx*(q1q2-q0q3)+_4bz*(q0q1+q2q3)-my) + (_4bx*q3-_8bz*q1)*(_4bx*(q0q2+q1q3)+_4bz*(0.5-q1q1-q2q2)-mz)
-			// s2 = -_2q0*(2.0*(q1q3-q0q2)-ax) + _2q3*(2.0*(q0q1+q2q3)-ay) + (-4.0*q2)*(2.0*(0.5-q1q1-q2q2)-az) + (-_8bx*q2-_4bz*q0)*(_4bx*(0.5-q2q2-q3q3)+_4bz*(q1q3-q0q2)-mx) + (_4bx*q1+_4bz*q3)*(_4bx*(q1q2-q0q3)+_4bz*(q0q1+q2q3)-my) + (_4bx*q0-_8bz*q2)*(_4bx*(q0q2+q1q3)+_4bz*(0.5-q1q1-q2q2)-mz)
-			// s3 = _2q1*(2.0*(q1q3-q0q2)-ax) + _2q2*(2.0*(q0q1+q2q3)-ay) + (-_8bx*q3+_4bz*q1)*(_4bx*(0.5-q2q2-q3q3)+_4bz*(q1q3-q0q2)-mx) + (-_4bx*q0+_4bz*q2)*(_4bx*(q1q2-q0q3)+_4bz*(q0q1+q2q3)-my) + (_4bx*q1)*(_4bx*(q0q2+q1q3)+_4bz*(0.5-q1q1-q2q2)-mz)
-			s0 = -_2q2*(2.0*q1q3-_2q0q2-ax) + _2q1*(2.0*q0q1+_2q2q3-ay) - _2bz*q2*(_2bx*(0.5-q2q2-q3q3)+_2bz*(q1q3-q0q2)-mx) + (-_2bx*q3+_2bz*q1)*(_2bx*(q1q2-q0q3)+_2bz*(q0q1+q2q3)-my) + _2bx*q2*(_2bx*(q0q2+q1q3)+_2bz*(0.5-q1q1-q2q2)-mz)
-			s1 = _2q3*(2.0*q1q3-_2q0q2-ax) + _2q0*(2.0*q0q1+_2q2q3-ay) - 4.0*q1*(1-2.0*q1q1-2.0*q2q2-az) + _2bz*q3*(_2bx*(0.5-q2q2-q3q3)+_2bz*(q1q3-q0q2)-mx) + (_2bx*q2+_2bz*q0)*(_2bx*(q1q2-q0q3)+_2bz*(q0q1+q2q3)-my) + (_2bx*q3-_4bz*q1)*(_2bx*(q0q2+q1q3)+_2bz*(0.5-q1q1-q2q2)-mz)
-			s2 = -_2q0*(2.0*q1q3-_2q0q2-ax) + _2q3*(2.0*q0q1+_2q2q3-ay) - 4.0*q2*(1-2.0*q1q1-2.0*q2q2-az) + (-_4bx*q2-_2bz*q0)*(_2bx*(0.5-q2q2-q3q3)+_2bz*(q1q3-q0q2)-mx) + (_2bx*q1+_2bz*q3)*(_2bx*(q1q2-q0q3)+_2bz*(q0q1+q2q3)-my) + (_2bx*q0-_4bz*q2)*(_2bx*(q0q2+q1q3)+_2bz*(0.5-q1q1-q2q2)-mz)
-			s3 = _2q1*(2.0*q1q3-_2q0q2-ax) + _2q2*(2.0*q0q1+_2q2q3-ay) + (-_4bx*q3+_2bz*q1)*(_2bx*(0.5-q2q2-q3q3)+_2bz*(q1q3-q0q2)-mx) + (-_2bx*q0+_2bz*q2)*(_2bx*(q1q2-q0q3)+_2bz*(q0q1+q2q3)-my) + _2bx*q1*(_2bx*(q0q2+q1q3)+_2bz*(0.5-q1q1-q2q2)-mz)
+			s0 = -_2q2*(2.0*(q1q3-q0q2)-ax) + _2q1*(2.0*(q0q1+q2q3)-ay) + -_4bz*q2*(_4bx*(0.5-q2q2-q3q3)+_4bz*(q1q3-q0q2)-mx) + (-_4bx*q3+_4bz*q1)*(_4bx*(q1q2-q0q3)+_4bz*(q0q1+q2q3)-my) + _4bx*q2*(_4bx*(q0q2+q1q3)+_4bz*(0.5-q1q1-q2q2)-mz)
+			s1 = _2q3*(2.0*(q1q3-q0q2)-ax) + _2q0*(2.0*(q0q1+q2q3)-ay) + -4.0*q1*(2.0*(0.5-q1q1-q2q2)-az) + _4bz*q3*(_4bx*(0.5-q2q2-q3q3)+_4bz*(q1q3-q0q2)-mx) + (_4bx*q2+_4bz*q0)*(_4bx*(q1q2-q0q3)+_4bz*(q0q1+q2q3)-my) + (_4bx*q3-_8bz*q1)*(_4bx*(q0q2+q1q3)+_4bz*(0.5-q1q1-q2q2)-mz)
+			s2 = -_2q0*(2.0*(q1q3-q0q2)-ax) + _2q3*(2.0*(q0q1+q2q3)-ay) + (-4.0*q2)*(2.0*(0.5-q1q1-q2q2)-az) + (-_8bx*q2-_4bz*q0)*(_4bx*(0.5-q2q2-q3q3)+_4bz*(q1q3-q0q2)-mx) + (_4bx*q1+_4bz*q3)*(_4bx*(q1q2-q0q3)+_4bz*(q0q1+q2q3)-my) + (_4bx*q0-_8bz*q2)*(_4bx*(q0q2+q1q3)+_4bz*(0.5-q1q1-q2q2)-mz)
+			s3 = _2q1*(2.0*(q1q3-q0q2)-ax) + _2q2*(2.0*(q0q1+q2q3)-ay) + (-_8bx*q3+_4bz*q1)*(_4bx*(0.5-q2q2-q3q3)+_4bz*(q1q3-q0q2)-mx) + (-_4bx*q0+_4bz*q2)*(_4bx*(q1q2-q0q3)+_4bz*(q0q1+q2q3)-my) + (_4bx*q1)*(_4bx*(q0q2+q1q3)+_4bz*(0.5-q1q1-q2q2)-mz)
+			// s0 = -_2q2*(2.0*q1q3-_2q0q2-ax) + _2q1*(2.0*q0q1+_2q2q3-ay) - _2bz*q2*(_2bx*(0.5-q2q2-q3q3)+_2bz*(q1q3-q0q2)-mx) + (-_2bx*q3+_2bz*q1)*(_2bx*(q1q2-q0q3)+_2bz*(q0q1+q2q3)-my) + _2bx*q2*(_2bx*(q0q2+q1q3)+_2bz*(0.5-q1q1-q2q2)-mz)
+			// s1 = _2q3*(2.0*q1q3-_2q0q2-ax) + _2q0*(2.0*q0q1+_2q2q3-ay) - 4.0*q1*(1-2.0*q1q1-2.0*q2q2-az) + _2bz*q3*(_2bx*(0.5-q2q2-q3q3)+_2bz*(q1q3-q0q2)-mx) + (_2bx*q2+_2bz*q0)*(_2bx*(q1q2-q0q3)+_2bz*(q0q1+q2q3)-my) + (_2bx*q3-_4bz*q1)*(_2bx*(q0q2+q1q3)+_2bz*(0.5-q1q1-q2q2)-mz)
+			// s2 = -_2q0*(2.0*q1q3-_2q0q2-ax) + _2q3*(2.0*q0q1+_2q2q3-ay) - 4.0*q2*(1-2.0*q1q1-2.0*q2q2-az) + (-_4bx*q2-_2bz*q0)*(_2bx*(0.5-q2q2-q3q3)+_2bz*(q1q3-q0q2)-mx) + (_2bx*q1+_2bz*q3)*(_2bx*(q1q2-q0q3)+_2bz*(q0q1+q2q3)-my) + (_2bx*q0-_4bz*q2)*(_2bx*(q0q2+q1q3)+_2bz*(0.5-q1q1-q2q2)-mz)
+			// s3 = _2q1*(2.0*q1q3-_2q0q2-ax) + _2q2*(2.0*q0q1+_2q2q3-ay) + (-_4bx*q3+_2bz*q1)*(_2bx*(0.5-q2q2-q3q3)+_2bz*(q1q3-q0q2)-mx) + (-_2bx*q0+_2bz*q2)*(_2bx*(q1q2-q0q3)+_2bz*(q0q1+q2q3)-my) + _2bx*q1*(_2bx*(q0q2+q1q3)+_2bz*(0.5-q1q1-q2q2)-mz)
 			recipNorm = invSqrt(s0*s0 + s1*s1 + s2*s2 + s3*s3) // normalise step magnitude
 			s0 *= recipNorm
 			s1 *= recipNorm

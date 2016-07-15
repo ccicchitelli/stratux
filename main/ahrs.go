@@ -227,7 +227,7 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 
 		fusionCount++
 
-		if fusionCount > 5 {
+		if fusionCount > 1 {
 			fusionCount = 0
 		}
 	}

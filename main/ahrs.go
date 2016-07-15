@@ -22,9 +22,9 @@ var w_bx, w_by, w_bz float64 = 0.0, 0.0, 0.0                // estimate gyroscop
 
 var attitudeX, attitudeY, attitudeZ, heading, gForce float64 = 0.0, 0.0, 0.0, 0.0, 0.0
 var headingHistory [500]float64
-var attitudeXhistory [20]float64
-var attitudeYhistory [20]float64
-var attitudeZhistory [20]float64
+var attitudeXhistory [30]float64
+var attitudeYhistory [30]float64
+var attitudeZhistory [30]float64
 var initCount = 0
 
 //var fusionCount = 0
@@ -150,7 +150,7 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 
 		// continue with accelerometer compensation only if near 1 G, otherwise run gryo-only for this cycle
 		//if gForce >= 0.9 && gForce <= 1.1 {
-		if gForce >= 0.9 && gForce <= 0.900075 {
+		if gForce >= 0.9 && gForce <= 0.90006 {
 			// Normalise accelerometer measurement
 			recipNorm = invSqrt(ax*ax + ay*ay + az*az)
 			ax *= recipNorm

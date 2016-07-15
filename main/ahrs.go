@@ -148,7 +148,7 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 	// Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
 	if !((ax == 0.0) && (ay == 0.0) && (az == 0.0)) {
 		var rG [3]float64
-		// var rA [3]float64
+		var rA [3]float64
 		// var mA [3]float64
 		var gravity [3]float64 // always vertically downwards at g = 1.0
 		gravity[0] = 0.1
@@ -170,17 +170,20 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 		rG[1] = gravity[0]*R[1][0] + gravity[1]*R[1][1] + gravity[2]*R[1][2]
 		rG[2] = gravity[0]*R[2][0] + gravity[1]*R[2][1] + gravity[2]*R[2][2]
 
-		// rA[0] = ax*R[0][0] + ay*R[0][1] + az*R[0][2]
-		// rA[1] = ax*R[1][0] + ay*R[1][1] + az*R[1][2]
-		// rA[2] = ax*R[2][0] + ay*R[2][1] + az*R[2][2]
+		rA[0] = ax*R[0][0] + ay*R[0][1] + az*R[0][2]
+		rA[1] = ax*R[1][0] + ay*R[1][1] + az*R[1][2]
+		rA[2] = ax*R[2][0] + ay*R[2][1] + az*R[2][2]
 
-		// mA[0] = rA[0] - rG[0]
-		// mA[1] = rA[1] - rG[1]
-		// mA[2] = rA[2] - rG[2]
+		ax -= rA[0]
+		ay -= rA[1]
+		az -= rA[2]
 
-		ax = rG[0]
-		ay = rG[1]
-		az = rG[2]
+		// ax = rG[0]
+		// ay = rG[1]
+		// az = rG[2]
+		ax = mA[0]
+		ay = mA[1]
+		az = mA[2]
 
 		//measure g-force
 		//gForce = math.Sqrt(ax*ax + ay*ay + az*az)

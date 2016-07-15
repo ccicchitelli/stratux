@@ -129,7 +129,7 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 	}
 
 	var recipNorm float64                  // vector norm
-	var qDot1, qDot2, qDot3, qDot4 float64 // quaternion rate from gyroscopes elements
+	varqDot1, qDot2, qDot3, qDot4 float64 // quaternion rate from gyroscopes elements
 	var s0, s1, s2, s3 float64             // estimated direction of the gyroscope error
 	var hx, hy float64
 	var _2q0mx, _2q0my, _2q0mz, _2q1mx, _2bx, _2bz, _4bx, _4bz, _8bx, _8bz, _2q0, _2q1, _2q2, _2q3, q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3 float64
@@ -154,17 +154,18 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 		gravity[0] = 0.1
 		gravity[1] = 0.0
 		gravity[2] = 1.0
+		var q0t, q1t, q2t, q3t float64 = q0 + qDot1 * (1.0 / sampleFreq), q1 + qDot2 * (1.0 / sampleFreq), q2 + qDot3 * (1.0 / sampleFreq), q3 + qDot4 * (1.0 / sampleFreq)
 
 		CalculateCurrentAttitudeXYZ()
-		R[0][0] = q0*q0 + q1*q1 - q2*q2 - q3*q3
-		R[0][1] = 2.0 * (q1*q2 - q0*q3)
-		R[0][2] = 2.0 * (q1*q3 + q0*q2)
-		R[1][0] = 2.0 * (q1*q2 + q0*q3)
-		R[1][1] = q0*q0 - q1*q1 + q2*q2 - q3*q3
-		R[1][2] = 2.0 * (q2*q3 - q0*q1)
-		R[2][0] = 2.0 * (q1*q3 - q0*q2)
-		R[2][1] = 2.0 * (q2*q3 + q0*q1)
-		R[2][2] = q0*q0 - q1*q1 - q2*q2 + q3*q3
+		R[0][0] = q0t*q0t + q1t*q1t - q2t*q2t - q3t*q3t
+		R[0][1] = 2.0 * (q1t*q2t - q0t*q3t)
+		R[0][2] = 2.0 * (q1t*q3t + q0t*q2t)
+		R[1][0] = 2.0 * (q1t*q2t + q0t*q3t)
+		R[1][1] = q0t*q0t - q1t*q1t + q2t*q2t - q3t*q3t
+		R[1][2] = 2.0 * (q2t*q3t - q0t*q1t)
+		R[2][0] = 2.0 * (q1t*q3t - q0t*q2t)
+		R[2][1] = 2.0 * (q2t*q3t + q0t*q1t)
+		R[2][2] = q0t*q0t - q1t*q1t - q2t*q2t + q3t*q3t
 
 		rG[0] = gravity[0]*R[0][0] + gravity[1]*R[0][1] + gravity[2]*R[0][2]
 		rG[1] = gravity[0]*R[1][0] + gravity[1]*R[1][1] + gravity[2]*R[1][2]
@@ -174,13 +175,13 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 		rA[1] = ax*R[1][0] + ay*R[1][1] + az*R[1][2]
 		rA[2] = ax*R[2][0] + ay*R[2][1] + az*R[2][2]
 
-		ax = ax - rA[0]
-		ay = ay - rA[1]
-		az = az - rA[2]
+		// ax = ax - rA[0]
+		// ay = ay - rA[1]
+		// az = az - rA[2]
 
-		// ax = rG[0]
-		// ay = rG[1]
-		// az = rG[2]
+		ax = rG[0]
+		ay = rG[1]
+		az = rG[2]
 		// ax = mA[0]
 		// ay = mA[1]
 		// az = mA[2]

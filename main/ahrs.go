@@ -165,16 +165,16 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 			// 	az = azl
 			// }
 
+			// store magnetometer raw values for later heading calculation
+			magX = mx
+			magY = my
+			magZ = mz
+
 			// Normalise magnetometer measurement
 			recipNorm = invSqrt(mx*mx + my*my + mz*mz)
 			mx *= recipNorm
 			my *= recipNorm
 			mz *= recipNorm
-
-			// store magnetometer raw values for later heading calculation
-			magX = mx
-			magY = my
-			magZ = mz
 
 			// Auxiliary variables to avoid repeated arithmetic
 			_2q0mx = 2.0 * q0 * mx
@@ -185,8 +185,8 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 			_2q1 = 2.0 * q1
 			_2q2 = 2.0 * q2
 			_2q3 = 2.0 * q3
-			// _2q0q2 = 2.0 * q0 * q2
-			// _2q2q3 = 2.0 * q2 * q3
+			_2q0q2 = 2.0 * q0 * q2
+			_2q2q3 = 2.0 * q2 * q3
 			q0q0 = q0 * q0
 			q0q1 = q0 * q1
 			q0q2 = q0 * q2
@@ -211,8 +211,8 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 			_2bz = -_2q0mx*q2 + _2q0my*q1 + mz*q0q0 + _2q1mx*q3 - mz*q1q1 + _2q2*my*q3 - mz*q2q2 + mz*q3q3
 			_4bx = 2.0 * _2bx
 			_4bz = 2.0 * _2bz
-			_8bx = 2.0 * _4bx
-			_8bz = 2.0 * _4bz
+			// _8bx = 2.0 * _4bx
+			// _8bz = 2.0 * _4bz
 
 			// Gradient decent algorithm corrective step
 			// s0 = -_2q2*(2*(q1q3-q0q2)-ax) + _2q1*(2*(q0q1+q2q3)-ay) + -_4bz*q2*(_4bx*(0.5-q2q2-q3q3)+_4bz*(q1q3-q0q2)-mx) + (-_4bx*q3+_4bz*q1)*(_4bx*(q1q2-q0q3)+_4bz*(q0q1+q2q3)-my) + _4bx*q2*(_4bx*(q0q2+q1q3)+_4bz*(0.5-q1q1-q2q2)-mz)

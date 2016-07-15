@@ -190,9 +190,9 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 		gravity[1] = 2 * (q0*q1 + q2*q3)
 		gravity[2] = q0*q0 - q1*q1 - q2*q2 + q3*q3
 
-		ax = gravity[0]
-		ay = gravity[1]
-		az = gravity[2]
+		ax -= gravity[0]
+		ay -= gravity[1]
+		az -= gravity[2]
 
 		//measure g-force
 		//gForce = math.Sqrt(ax*ax + ay*ay + az*az)

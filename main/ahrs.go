@@ -140,6 +140,9 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 	qDot3 = 0.5 * (q0*gy - q1*gz + q3*gx)
 	qDot4 = 0.5 * (q0*gz + q1*gy - q2*gx)
 
+	ax = 0.0
+	ay = 0.0
+	az = 0.0
 	// Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
 	if !((ax == 0.0) && (ay == 0.0) && (az == 0.0)) {
 

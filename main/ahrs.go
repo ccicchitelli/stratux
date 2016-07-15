@@ -22,9 +22,9 @@ var w_bx, w_by, w_bz float64 = 0.0, 0.0, 0.0                // estimate gyroscop
 
 var attitudeX, attitudeY, attitudeZ, heading, gForce float64 = 0.0, 0.0, 0.0, 0.0, 0.0
 var headingHistory [500]float64
-var attitudeXhistory [8]float64
-var attitudeYhistory [8]float64
-var attitudeZhistory [8]float64
+var attitudeXhistory [20]float64
+var attitudeYhistory [20]float64
+var attitudeZhistory [20]float64
 var initCount = 0
 var fusionCount = 0
 
@@ -227,7 +227,7 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 
 		fusionCount++
 
-		if fusionCount > 2 {
+		if fusionCount > 1 {
 			fusionCount = 0
 		}
 	}

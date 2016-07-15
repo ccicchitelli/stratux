@@ -10,7 +10,7 @@ var q0, q1, q2, q3 float64 = 1.0, 0.0, 0.0, 0.0 // estimated orientation quatern
 var magX, magY, magZ float64                    // magnetometer measurements
 
 var deltat float64 = 0.002 // sampling period in seconds (shown as 2 ms)
-var beta float64 = 3
+var beta float64 = 5
 var zeta float64 = 0
 var a_x, a_y, a_z float64                                   // accelerometer measurements
 var axl, ayl, azl float64                                   // last known good normalised accelerometer measurements
@@ -121,7 +121,7 @@ func GetCurrentAttitudeQ() (float64, float64, float64, float64) {
 func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 	initCount++
 	if initCount > 5000 { // 10 seconds
-		beta = 0.9
+		//beta = 0.9
 	}
 
 	var recipNorm float64                  // vector norm

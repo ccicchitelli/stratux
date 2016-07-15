@@ -26,7 +26,8 @@ var attitudeXhistory [20]float64
 var attitudeYhistory [20]float64
 var attitudeZhistory [20]float64
 var initCount = 0
-var fusionCount = 0
+
+//var fusionCount = 0
 
 // Calculates the current heading, optionally compensating for the current attitude
 func CalculateHeading() {
@@ -149,7 +150,7 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 
 		// continue with accelerometer compensation only if near 1 G, otherwise run gryo-only for this cycle
 		//if gForce >= 0.9 && gForce <= 1.1 {
-		if gForce >= 0.9 && gForce <= 0.9001 {
+		if gForce >= 0.9 && gForce <= 0.90005 {
 			// Normalise accelerometer measurement
 			recipNorm = invSqrt(ax*ax + ay*ay + az*az)
 			ax *= recipNorm

@@ -150,7 +150,10 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 		var rG [3]float64
 		// var rA [3]float64
 		// var mA [3]float64
-		var gravity [3]float64 = { 0.1, 0, 1.0 } // always vertically downwards at g = 1.0
+		var gravity [3]float64 // always vertically downwards at g = 1.0
+		gravity[0] = 0.1
+		gravity[1] = 0.0
+		gravity[2] = 1.0
 
 		CalculateCurrentAttitudeXYZ()
 		R[0][0] = q0*q0 + q1*q1 - q2*q2 - q3*q3

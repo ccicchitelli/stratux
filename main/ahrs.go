@@ -19,7 +19,7 @@ var SEq_1, SEq_2, SEq_3, SEq_4 float64 = 1.0, 0.0, 0.0, 0.0 // estimated orienta
 var b_x, b_z float64 = 1, 0                                 // reference direction of flux in earth frame
 var w_bx, w_by, w_bz float64 = 0.0, 0.0, 0.0                // estimate gyroscope biases error
 
-var attitudeX, attitudeY, attitudeZ, heading float64 = 0.0, 0.0, 0.0, 0.0
+var attitudeX, attitudeY, attitudeZ, heading, gForce float64 = 0.0, 0.0, 0.0, 0.0, 0.0
 var headingHistory [500]float64
 var attitudeXhistory [8]float64
 var attitudeYhistory [8]float64
@@ -144,11 +144,11 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 	if !((ax == 0.0) && (ay == 0.0) && (az == 0.0)) {
 
 		//measure g-force
-		gForce := math.Sqrt(ax*ax + ay*ay + az*az)
+		gForce = math.Sqrt(ax*ax + ay*ay + az*az)
 
 		// continue with accelerometer compensation only if near 1 G, otherwise run gryo-only for this cycle
 		//if gForce >= 0.9 && gForce <= 1.1 {
-		if gForce >= 0.895 && gForce <= 0.905 {
+		if gForce >= 0.899 && gForce <= 0.901 {
 
 			// Normalise accelerometer measurement
 			recipNorm = invSqrt(ax*ax + ay*ay + az*az)

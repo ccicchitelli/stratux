@@ -123,7 +123,7 @@ func GetCurrentAttitudeQ() (float64, float64, float64, float64) {
 func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 	initCount++
 	if initCount > 5000 { // 10 seconds
-		beta = 0.9
+		//beta = 0.9
 	}
 
 	var recipNorm float64                  // vector norm

@@ -148,7 +148,7 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 	// Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
 	if !((ax == 0.0) && (ay == 0.0) && (az == 0.0)) {
 		var rG [3]float64
-		var aG [3]float64
+		var rA [3]float64
 		var mA [3]float64
 		var gravity [3]float64 = 0.1, 0, 1.0 // always vertically downwards at g = 1.0
 

@@ -156,8 +156,8 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 			az *= recipNorm
 
 			axl = ax
-			axy = ay
-			axz = az
+			ayl = ay
+			azl = az
 		} else {
 			// use last valid reference until new good reference
 			ax = axl

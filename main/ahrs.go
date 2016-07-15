@@ -123,7 +123,7 @@ func GetCurrentAttitudeQ() (float64, float64, float64, float64) {
 func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 	initCount++
 	if initCount > 5000 { // 10 seconds
-		//beta = 0.9
+		beta = 0.9
 	}
 
 	var recipNorm float64                  // vector norm
@@ -150,7 +150,7 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 
 		// continue with accelerometer compensation only if near 1 G, otherwise run gryo-only for this cycle
 		//if gForce >= 0.9 && gForce <= 1.1 {
-		if gForce >= 0.9 && gForce <= 0.90005 {
+		if gForce >= 0.9 && gForce <= 0.900045 {
 			// Normalise accelerometer measurement
 			recipNorm = invSqrt(ax*ax + ay*ay + az*az)
 			ax *= recipNorm

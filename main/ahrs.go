@@ -147,44 +147,52 @@ func AHRSupdateOld(gx, gy, gz, ax, ay, az, mx, my, mz float64) {
 
 	// Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
 	if !((ax == 0.0) && (ay == 0.0) && (az == 0.0)) {
-		var rG [3]float64
-		var rA [3]float64
+		// var rG [3]float64
+		// var rA [3]float64
 		// var mA [3]float64
 		var gravity [3]float64 // always vertically downwards at g = 1.0
 		gravity[0] = 0.1
 		gravity[1] = 0.0
 		gravity[2] = 1.0
-		var q0t, q1t, q2t, q3t float64 = q0 + qDot1*(1.0/sampleFreq), q1 + qDot2*(1.0/sampleFreq), q2 + qDot3*(1.0/sampleFreq), q3 + qDot4*(1.0/sampleFreq)
+		// var q0t, q1t, q2t, q3t float64 = q0 + qDot1*(1.0/sampleFreq), q1 + qDot2*(1.0/sampleFreq), q2 + qDot3*(1.0/sampleFreq), q3 + qDot4*(1.0/sampleFreq)
 
-		CalculateCurrentAttitudeXYZ()
-		R[0][0] = q0t*q0t + q1t*q1t - q2t*q2t - q3t*q3t
-		R[0][1] = 2.0 * (q1t*q2t - q0t*q3t)
-		R[0][2] = 2.0 * (q1t*q3t + q0t*q2t)
-		R[1][0] = 2.0 * (q1t*q2t + q0t*q3t)
-		R[1][1] = q0t*q0t - q1t*q1t + q2t*q2t - q3t*q3t
-		R[1][2] = 2.0 * (q2t*q3t - q0t*q1t)
-		R[2][0] = 2.0 * (q1t*q3t - q0t*q2t)
-		R[2][1] = 2.0 * (q2t*q3t + q0t*q1t)
-		R[2][2] = q0t*q0t - q1t*q1t - q2t*q2t + q3t*q3t
+		// CalculateCurrentAttitudeXYZ()
+		// R[0][0] = q0t*q0t + q1t*q1t - q2t*q2t - q3t*q3t
+		// R[0][1] = 2.0 * (q1t*q2t - q0t*q3t)
+		// R[0][2] = 2.0 * (q1t*q3t + q0t*q2t)
+		// R[1][0] = 2.0 * (q1t*q2t + q0t*q3t)
+		// R[1][1] = q0t*q0t - q1t*q1t + q2t*q2t - q3t*q3t
+		// R[1][2] = 2.0 * (q2t*q3t - q0t*q1t)
+		// R[2][0] = 2.0 * (q1t*q3t - q0t*q2t)
+		// R[2][1] = 2.0 * (q2t*q3t + q0t*q1t)
+		// R[2][2] = q0t*q0t - q1t*q1t - q2t*q2t + q3t*q3t
 
-		rG[0] = gravity[0]*R[0][0] + gravity[1]*R[0][1] + gravity[2]*R[0][2]
-		rG[1] = gravity[0]*R[1][0] + gravity[1]*R[1][1] + gravity[2]*R[1][2]
-		rG[2] = gravity[0]*R[2][0] + gravity[1]*R[2][1] + gravity[2]*R[2][2]
+		// rG[0] = gravity[0]*R[0][0] + gravity[1]*R[0][1] + gravity[2]*R[0][2]
+		// rG[1] = gravity[0]*R[1][0] + gravity[1]*R[1][1] + gravity[2]*R[1][2]
+		// rG[2] = gravity[0]*R[2][0] + gravity[1]*R[2][1] + gravity[2]*R[2][2]
 
-		rA[0] = ax*R[0][0] + ay*R[0][1] + az*R[0][2]
-		rA[1] = ax*R[1][0] + ay*R[1][1] + az*R[1][2]
-		rA[2] = ax*R[2][0] + ay*R[2][1] + az*R[2][2]
+		// rA[0] = ax*R[0][0] + ay*R[0][1] + az*R[0][2]
+		// rA[1] = ax*R[1][0] + ay*R[1][1] + az*R[1][2]
+		// rA[2] = ax*R[2][0] + ay*R[2][1] + az*R[2][2]
 
 		// ax = ax - rA[0]
 		// ay = ay - rA[1]
 		// az = az - rA[2]
 
-		ax = rG[0]
-		ay = rG[1]
-		az = rG[2]
+		// ax = rG[0]
+		// ay = rG[1]
+		// az = rG[2]
 		// ax = mA[0]
 		// ay = mA[1]
 		// az = mA[2]
+
+		gravity[0] = 2 * (q1*q3 - q0*q2)
+		gravity[1] = 2 * (q0*q1 + q2*q3)
+		gravity[2] = q0*q0 - q1*q1 - q2*q2 + q3*q3
+
+		ax = gravity[0]
+		ay = gravity[1]
+		az = gravity[2]
 
 		//measure g-force
 		//gForce = math.Sqrt(ax*ax + ay*ay + az*az)

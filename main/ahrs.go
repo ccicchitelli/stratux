@@ -9,16 +9,16 @@ var sampleFreq float64 = 500.0
 var q0, q1, q2, q3 float64 = 1.0, 0.0, 0.0, 0.0 // estimated orientation quaternion elements with initial conditions
 var magX, magY, magZ float64                    // magnetometer measurements
 
-var deltat float64 = 0.002 // sampling period in seconds (shown as 2 ms)
-var beta float64 = 5
-var zeta float64 = 0
-var a_x, a_y, a_z float64                                   // accelerometer measurements
-var axl, ayl, azl float64                                   // last known good normalised accelerometer measurements
-var w_x, w_y, w_z float64                                   // gyroscope measurements in rad/s
-var m_x, m_y, m_z float64                                   // magnetometer measurements
-var SEq_1, SEq_2, SEq_3, SEq_4 float64 = 1.0, 0.0, 0.0, 0.0 // estimated orientation quaternion elements with initial conditions
-var b_x, b_z float64 = 1, 0                                 // reference direction of flux in earth frame
-var w_bx, w_by, w_bz float64 = 0.0, 0.0, 0.0                // estimate gyroscope biases error
+// var deltat float64 = 0.002 // sampling period in seconds (shown as 2 ms)
+// var beta float64 = 5
+// var zeta float64 = 0
+// var a_x, a_y, a_z float64                                   // accelerometer measurements
+// var axl, ayl, azl float64                                   // last known good normalised accelerometer measurements
+// var w_x, w_y, w_z float64                                   // gyroscope measurements in rad/s
+// var m_x, m_y, m_z float64                                   // magnetometer measurements
+// var SEq_1, SEq_2, SEq_3, SEq_4 float64 = 1.0, 0.0, 0.0, 0.0 // estimated orientation quaternion elements with initial conditions
+// var b_x, b_z float64 = 1, 0                                 // reference direction of flux in earth frame
+// var w_bx, w_by, w_bz float64 = 0.0, 0.0, 0.0                // estimate gyroscope biases error
 
 var attitudeX, attitudeY, attitudeZ, heading, gForce float64 = 0.0, 0.0, 0.0, 0.0, 0.0
 var headingHistory [500]float64
@@ -29,6 +29,10 @@ var initCount = 0
 
 //var fusionCount = 0
 
+func InitIMU() {
+
+}
+
 // Calculates the current heading, optionally compensating for the current attitude
 func CalculateHeading() {
 	magXtemp := magX
@@ -37,7 +41,7 @@ func CalculateHeading() {
 	//these equations account for tilt error
 	magXcomp := magXtemp*math.Cos(attitudeY) + magZtemp*math.Sin(attitudeY)
 	magYcomp := magXtemp*math.Sin(attitudeX)*math.Sin(attitudeY) + magYtemp*math.Cos(attitudeX) - magZtemp*math.Sin(attitudeX)*math.Cos(attitudeY)
-	tempHeading := 180 * math.Atan2(magYcomp, magXcomp) / math.Pi
+	tempHeading := 180 * math.Atan2(magYcomp, magXcomp) / math.Pi // or MAG_Heading = Atan(CMy/CMx)
 
 	if tempHeading < 0 {
 		tempHeading += 360
@@ -116,6 +120,7 @@ func GetCurrentAttitudeQ() (float64, float64, float64, float64) {
 	return q0, q1, q2, q3
 }
 
+/*
 var R [3][3]float64
 
 // Gyro input values should be in radians/second, not degrees/second.
@@ -444,11 +449,11 @@ func AHRSupdate(w_x, w_y, w_z, a_x, a_y, a_z, m_x, m_y, m_z float64) {
 	b_x = math.Sqrt((h_x * h_x) + (h_y * h_y))
 	b_z = h_z
 }
-
+*/
 func isAHRSValid() bool {
 	return stratuxClock.Since(mySituation.LastAttitudeTime) < 1*time.Second // If attitude information gets to be over 1 second old, declare invalid.
 }
 
-func invSqrt(x float64) float64 {
-	return 1.0 / math.Sqrt(x)
-}
+// func invSqrt(x float64) float64 {
+// 	return 1.0 / math.Sqrt(x)
+// }

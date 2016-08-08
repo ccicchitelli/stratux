@@ -1385,7 +1385,7 @@ func main() {
 	initDataLog()
 
 	initGPS()
-	initMPU9250()
+	//initMPU9250() // change to init RTIMULib/AHRS
 	go attitudeReaderSender()
 
 	// Start the heartbeat message loop in the background, once per second.

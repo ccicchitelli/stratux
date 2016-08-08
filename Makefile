@@ -10,6 +10,7 @@ all:
 	make xdump978
 	make xdump1090
 	make xgen_gdl90
+	make xrtimulib
 
 xdump978:
 	cd dump978 && make lib
@@ -22,6 +23,10 @@ xdump1090:
 xgen_gdl90:
 	go get -t -d -v ./main ./test ./godump978 ./uatparse
 	go build $(BUILDINFO) -p 4 main/gen_gdl90.go main/traffic.go main/gps.go main/network.go main/managementinterface.go main/sdr.go main/uibroadcast.go main/monotonic.go main/datalog.go main/equations.go main/mpu9250.go main/ahrs.go
+
+xrtimulib:
+	git submodule update --init
+	cd RTIMULib/RTIMULib && cmake
 
 .PHONY: test
 test:

@@ -31,8 +31,8 @@ xrtimulib:
 	cd /root/stratux/RTIMULib/RTIMULib/build
 	cmake /root/stratux/RTIMULib/RTIMULib
 	make -j4
-	sudo make install
-	sudo ldconfig 
+	make install
+	ldconfig 
 	
 .PHONY: test
 test:

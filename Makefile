@@ -26,8 +26,7 @@ xgen_gdl90:
 
 xrtimulib:
 	git submodule update --init
-	cd /root/stratux/RTIMULib/RTIMULib
-	mkdir -p build
+	cd /root/stratux/RTIMULib/RTIMULib && mkdir -p build
 	cd /root/stratux/RTIMULib/RTIMULib/build
 	cmake /root/stratux/RTIMULib/RTIMULib
 	make -j4

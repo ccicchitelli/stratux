@@ -28,8 +28,8 @@ xrtimulib:
 	git submodule update --init
 	cd RTIMULib/RTIMULib
 	mkdir -p build
-    cd build
-    cmake ..
+	cd build
+	cmake ..
     make -j4
     sudo make install
     sudo ldconfig

@@ -26,7 +26,7 @@ xgen_gdl90:
 
 xrtimulib:
 	git submodule update --init
-	cd RTIMULib/RTIMULib && mkdir build
+	cd RTIMULib/RTIMULib && mkdir -p build
 	cd build && cmake ..
 
 .PHONY: test

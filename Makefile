@@ -29,7 +29,7 @@ xrtimulib:
 	cd /root/stratux/RTIMULib/RTIMULib
 	mkdir -p build
 	cd build
-	cmake ..
+	cmake /root/stratux/RTIMULib/RTIMULib
 	make -j4
 	sudo make install
 	sudo ldconfig

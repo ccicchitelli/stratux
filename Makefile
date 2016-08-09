@@ -28,7 +28,7 @@ xrtimulib:
 	git submodule update --init
 	cd /root/stratux/RTIMULib/RTIMULib
 	mkdir -p build
-	cd build
+	cd /root/stratux/RTIMULib/RTIMULib/build
 	cmake /root/stratux/RTIMULib/RTIMULib
 	make -j4
 	sudo make install

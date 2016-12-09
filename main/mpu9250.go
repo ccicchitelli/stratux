@@ -143,6 +143,16 @@ func readRawData() {
 		z_gyro_f := float64(int16(z_gyro)) * math.Pi / 131.0
 
 		// Get magnetometer data.
+		//need to implement this, found by awalsh
+		//bs := make([]byte, 2)
+        	//binary.LittleEndian.PutUint16(bs, x_mag)
+        	//x_mag = binary.BigEndian.Uint16(bs)
+        	//binary.LittleEndian.PutUint16(bs, y_mag)
+        	//y_mag = binary.BigEndian.Uint16(bs)
+        	//binary.LittleEndian.PutUint16(bs, z_mag)
+        	//z_mag = binary.BigEndian.Uint16(bs)
+		
+		
 		setSetting(0x25, 0x0C|0x80) // Set the I2C slave addres of AK8963 and set for read.
 		setSetting(0x26, 0x03)      // I2C slave 0 register address from where to begin data transfer.
 		setSetting(0x27, 0x87)      // Read 7 bytes from the magnetometer (HX+HY+HZ+ST2).
